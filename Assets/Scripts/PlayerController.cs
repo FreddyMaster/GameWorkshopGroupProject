@@ -3,25 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(CapsuleCollider2D))]
+[RequireComponent(typeof(BoxCollider2D))]
 
 public class PlayerController : MonoBehaviour
 {
-    // Move player in 2D space
-    public float maxSpeed = 3.4f;
+    public float horizontalInput;
+    public float maxSpeed = 5.0f;
     public float jumpHeight = 6.5f;
-    public float gravityScale = 1.5f;
+    public float gravityScale = 1.0f;
     public Camera mainCamera;
+    public GameObject projectilePrefab;
+    public float projectileSpeed = 150.0f;
+    private float moveDirection = 0;
+    private bool isGrounded = false;
+    private Vector3 cameraPos;
+    private Rigidbody2D r2d;
+    private BoxCollider2D mainCollider;
+    private Transform t;
+    private Vector2 shootDirection = Vector2.right;
 
-    bool facingRight = true;
-    float moveDirection = 0;
-    bool isGrounded = false;
-    Vector3 cameraPos;
-    Rigidbody2D r2d;
-    BoxCollider2D mainCollider;
-    Transform t;
-
-    // Use this for initialization
     void Start()
     {
         t = transform;
@@ -30,7 +30,6 @@ public class PlayerController : MonoBehaviour
         r2d.freezeRotation = true;
         r2d.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         r2d.gravityScale = gravityScale;
-        facingRight = t.localScale.x > 0;
 
         if (mainCamera)
         {
@@ -38,41 +37,36 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
+        horizontalInput = 0;
+
         // Movement controls
-        if ((Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)) && (isGrounded || Mathf.Abs(r2d.velocity.x) > 0.01f))
+        if (Input.GetKey(KeyCode.A))
         {
-            moveDirection = Input.GetKey(KeyCode.A) ? -1 : 1;
+            horizontalInput = -1;
+            shootDirection = Vector2.left;
         }
-        else
+        else if (Input.GetKey(KeyCode.D))
         {
-            if (isGrounded || r2d.velocity.magnitude < 0.01f)
-            {
-                moveDirection = 0;
-            }
+            horizontalInput = 1;
+            shootDirection = Vector2.right;
         }
 
-        // Change facing direction
-        if (moveDirection != 0)
-        {
-            if (moveDirection > 0 && !facingRight)
-            {
-                facingRight = true;
-                t.localScale = new Vector3(Mathf.Abs(t.localScale.x), t.localScale.y, transform.localScale.z);
-            }
-            if (moveDirection < 0 && facingRight)
-            {
-                facingRight = false;
-                t.localScale = new Vector3(-Mathf.Abs(t.localScale.x), t.localScale.y, t.localScale.z);
-            }
-        }
+
+        // Move the player
+        MovePlayer(new Vector2(horizontalInput, 0));
 
         // Jumping
         if (Input.GetKeyDown(KeyCode.W) && isGrounded)
         {
             r2d.velocity = new Vector2(r2d.velocity.x, jumpHeight);
+        }
+
+        // Shooting
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            ShootProjectile();
         }
 
         // Camera follow
@@ -82,14 +76,37 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+        void MovePlayer(Vector2 direction)
+    {
+        // Normalize the direction vector to ensure consistent movement speed
+        if (direction.magnitude > 1)
+        {
+            direction.Normalize();
+        }
+
+        // Apply movement
+        transform.Translate(direction * Time.deltaTime * maxSpeed, Space.World);
+    }
+
+    private void ShootProjectile()
+    {
+        // Instantiate the projectile at the player's position
+        GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
+
+        // Set projectile direction based on the last movement direction
+        Rigidbody2D projectileRb = projectile.GetComponent<Rigidbody2D>();
+
+        projectileRb.velocity = shootDirection * projectileSpeed;
+    }
+
     void FixedUpdate()
     {
         Bounds colliderBounds = mainCollider.bounds;
         float colliderRadius = mainCollider.size.x * 0.4f * Mathf.Abs(transform.localScale.x);
         Vector3 groundCheckPos = colliderBounds.min + new Vector3(colliderBounds.size.x * 0.5f, colliderRadius * 0.9f, 0);
+
         // Check if player is grounded
         Collider2D[] colliders = Physics2D.OverlapCircleAll(groundCheckPos, colliderRadius);
-        //Check if any of the overlapping colliders are not player collider, if so, set isGrounded to true
         isGrounded = false;
         if (colliders.Length > 0)
         {
@@ -105,9 +122,5 @@ public class PlayerController : MonoBehaviour
 
         // Apply movement velocity
         r2d.velocity = new Vector2((moveDirection) * maxSpeed, r2d.velocity.y);
-
-        // Simple debug
-        Debug.DrawLine(groundCheckPos, groundCheckPos - new Vector3(0, colliderRadius, 0), isGrounded ? Color.green : Color.red);
-        Debug.DrawLine(groundCheckPos, groundCheckPos - new Vector3(colliderRadius, 0, 0), isGrounded ? Color.green : Color.red);
     }
 }
