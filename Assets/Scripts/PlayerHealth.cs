@@ -2,11 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerHealth : MonoBehaviour
 {
     public Image[] hearts; // Array to hold heart images in the UI
     public int health = 2; // Starting health, same as number of hearts
+    public GameObject gameOverPanel; // Reference to the Game Over UI panel
+    public float fallThreshold = -10f; // Y position threshold to detect falling off the map
+
+    void Start()
+    {
+        gameOverPanel.SetActive(false); // Ensure Game Over panel is hidden at start
+        UpdateHearts();
+    }
+
+    void Update()
+    {
+        // Check if the player has fallen below the threshold
+        if (transform.position.y < fallThreshold)
+        {
+            Die();
+        }
+    }
 
     // Call this function when the player is hit by an enemy
     public void TakeDamage()
@@ -35,8 +53,9 @@ public class PlayerHealth : MonoBehaviour
     // Handle player death
     private void Die()
     {
-        // Add your death logic here, like disabling the player or showing a game over screen
         Debug.Log("Player Died!");
+        gameOverPanel.SetActive(true); // Show the Game Over panel
+        Time.timeScale = 0; // Pause the game
     }
 
     // Detect collision with an enemy
@@ -46,5 +65,12 @@ public class PlayerHealth : MonoBehaviour
         {
             TakeDamage();
         }
+    }
+
+    // Function to restart the game, linked to the Retry button in the Game Over panel
+    public void Retry()
+    {
+        Time.timeScale = 1; // Resume game time
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name); // Reload the current scene
     }
 }
