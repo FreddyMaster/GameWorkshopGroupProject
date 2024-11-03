@@ -18,16 +18,13 @@ public class Projectile : MonoBehaviour
         // Check if the projectile hits an enemy
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            /*
             // Apply damage to the enemy, assuming it has an EnemyHealth component
             EnemyHealth enemyHealth = collision.gameObject.GetComponent<EnemyHealth>();
             if (enemyHealth != null)
             {
-                enemyHealth.TakeDamage(damage);
+                enemyHealth.TakeDamage(damage); // Call TakeDamage on the enemy
             }
-            */
 
-            Debug.Log("Hit Enemy");
             // Destroy the projectile on impact with an enemy
             Destroy(gameObject);
         }
