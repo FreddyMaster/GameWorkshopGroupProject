@@ -8,6 +8,7 @@ public class EnemyPatrol : MonoBehaviour
     public float speed = 2f; // Movement speed of the enemy
 
     private int currentPointIndex = 0;
+    private bool isFacingRight = true; // Track the current facing direction
 
     void Start()
     {
@@ -32,7 +33,22 @@ public class EnemyPatrol : MonoBehaviour
         {
             // Move to the next patrol point
             currentPointIndex = (currentPointIndex + 1) % patrolPoints.Length;
+
+            // Flip the sprite when the enemy changes direction
+            Flip();
         }
+    }
+
+    // Flips the enemy's sprite by changing the localScale
+    void Flip()
+    {
+        // Toggle the facing direction
+        isFacingRight = !isFacingRight;
+
+        // Flip the x-axis of the local scale to mirror the sprite
+        Vector3 localScale = transform.localScale;
+        localScale.x *= -1;
+        transform.localScale = localScale;
     }
 
     // Detect collision with projectiles
