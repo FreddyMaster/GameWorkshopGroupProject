@@ -95,6 +95,18 @@ public class PlayerController : MonoBehaviour
                 ShootProjectile();
             }
         }
+
+        // Flip the sprite for sidescroller movement
+        if (horizontalInput > 0)
+        {
+            // Face right (default orientation)
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+        }
+        else if (horizontalInput < 0)
+        {
+            // Face left (flipped horizontally)
+            transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+        }
     }
 
     void FixedUpdate()
@@ -142,5 +154,4 @@ public class PlayerController : MonoBehaviour
         Rigidbody2D projectileRb = projectile.GetComponent<Rigidbody2D>();
         projectileRb.velocity = shootDirection * projectileSpeed;
     }
-
 }
