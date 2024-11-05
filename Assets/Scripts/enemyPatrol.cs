@@ -4,28 +4,34 @@ using UnityEngine;
 
 public class EnemyPatrol : MonoBehaviour
 {
-    public Transform pointA; // The first patrol point
-    public Transform pointB; // The second patrol point
+    public Transform[] patrolPoints; // Array of patrol points
     public float speed = 2f; // Movement speed of the enemy
 
-    private Vector3 targetPosition;
+    private int currentPointIndex = 0;
 
     void Start()
     {
-        // Set initial target position to pointA
-        targetPosition = pointA.position;
+        // Start by moving towards the first patrol point if any are set
+        if (patrolPoints.Length > 0)
+        {
+            transform.position = patrolPoints[0].position;
+            currentPointIndex = 1;
+        }
     }
 
     void Update()
     {
-        // Move the enemy towards the target position
-        transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
+        // Ensure there are patrol points set
+        if (patrolPoints.Length == 0) return;
 
-        // Check if the enemy has reached the target position
-        if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
+        // Move the enemy towards the current target patrol point
+        transform.position = Vector3.MoveTowards(transform.position, patrolPoints[currentPointIndex].position, speed * Time.deltaTime);
+
+        // Check if the enemy has reached the current target patrol point
+        if (Vector3.Distance(transform.position, patrolPoints[currentPointIndex].position) < 0.1f)
         {
-            // Switch to the other target position
-            targetPosition = targetPosition == pointA.position ? pointB.position : pointA.position;
+            // Move to the next patrol point
+            currentPointIndex = (currentPointIndex + 1) % patrolPoints.Length;
         }
     }
 
