@@ -12,11 +12,6 @@ public class CameraController : MonoBehaviour
     public float maxZoom = 10f; // Maximum camera zoom
     public float zoomSpeed = 1f; // Speed of zoom adjustment
 
-    // Camera boundaries
-    public float minX = 0f; // Minimum x position
-    public float maxX = 10f; // Maximum x position
-    public float minY = 0f; // Minimum y position
-    public float maxY = 5f; // Maximum y position
 
     private Camera cam;
 
@@ -36,10 +31,6 @@ public class CameraController : MonoBehaviour
 
         // Set camera position
         Vector3 desiredPosition = new Vector3(centerPoint.x, centerPoint.y + offsetY, transform.position.z);
-
-        // Clamp the camera position within defined boundaries
-        desiredPosition.x = Mathf.Clamp(desiredPosition.x, minX, maxX);
-        desiredPosition.y = Mathf.Clamp(desiredPosition.y, minY, maxY);
 
         transform.position = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
 
