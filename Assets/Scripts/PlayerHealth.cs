@@ -66,11 +66,10 @@ public class PlayerHealth : MonoBehaviour
             TakeDamage();
         }
     }
-
-    // Function to restart the game, linked to the Retry button in the Game Over panel
-    public void Retry()
-    {
-        Time.timeScale = 1; // Resume game time
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name); // Reload the current scene
-    }
+        // Function to restart the game, linked to the Retry button in the Game Over panel
+public void RetryGame()
+{
+    Time.timeScale = 1; // Resume game time
+    SceneManager.LoadScene(SceneManager.GetActiveScene().name); // Reload the current scene
+}
 }
