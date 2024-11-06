@@ -11,19 +11,20 @@ public class PlayerController : MonoBehaviour
     public float maxSpeed = 5.0f;
     public float jumpHeight = 6.5f;
     public float gravityScale = 1.0f;
+    public float fireRate = 5f;
     public GameObject projectilePrefab;
     public float projectileSpeed = 150.0f;
     private bool isGrounded = false;
     private Rigidbody2D r2d;
     private BoxCollider2D mainCollider;
     private Transform t;
+    private float lastShotTime = 0f; // Time of the last shot
     private Vector2 shootDirection = Vector2.right;
 
     // Player identification
     public int playerNumber = 1; // 1 for Player 1, 2 for Player 2
 
     // Boundary
-    public float leftBoundary = 0f; // Set this to the desired x position
 
     void Start()
     {
@@ -92,6 +93,7 @@ public class PlayerController : MonoBehaviour
             // Shooting
             if (Input.GetKeyDown(KeyCode.Return)) // Use Enter for Player 2 shooting
             {
+
                 ShootProjectile();
             }
         }
@@ -111,12 +113,6 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        // Check for left boundary
-        Vector3 currentPosition = transform.position;
-        if (currentPosition.x < leftBoundary && horizontalInput < 0)
-        {
-            horizontalInput = 0; // Prevent left movement
-        }
 
         // Apply movement velocity
         float targetSpeed = horizontalInput * maxSpeed;
@@ -141,8 +137,10 @@ public class PlayerController : MonoBehaviour
 
     private void ShootProjectile()
     {
-        // Calculate the spawn position with an offset based on the shoot direction
-        Vector3 spawnPosition = transform.position + (Vector3)shootDirection * 0.5f;
+        if (Time.time >= lastShotTime + 1f / fireRate)
+        {
+            // Calculate the spawn position with an offset based on the shoot direction
+            Vector3 spawnPosition = transform.position + (Vector3)shootDirection * 0.5f;
 
         // Instantiate the projectile at the offset position
         GameObject projectile = Instantiate(projectilePrefab, spawnPosition, Quaternion.identity);
@@ -153,5 +151,12 @@ public class PlayerController : MonoBehaviour
         // Set projectile direction based on the last movement direction
         Rigidbody2D projectileRb = projectile.GetComponent<Rigidbody2D>();
         projectileRb.velocity = shootDirection * projectileSpeed;
+        lastShotTime = Time.time;
+        }
+        else
+        {
+            return;
+        }
     }
+
 }
