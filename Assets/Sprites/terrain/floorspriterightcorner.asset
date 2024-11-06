@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: floorspriterightt
+  m_Name: floorspriterightcorner
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 21300000, guid: e658a7c4b7e4975418240ccf2e6fc0dd, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2238359553949ad46982d78ebe73d718, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1
