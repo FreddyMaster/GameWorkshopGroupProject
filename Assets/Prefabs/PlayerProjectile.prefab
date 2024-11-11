@@ -12,10 +12,10 @@ GameObject:
   - component: {fileID: 8213912780357608523}
   - component: {fileID: 4982149255064529216}
   - component: {fileID: 5334840531928661956}
-  - component: {fileID: 2165825772001028291}
-  m_Layer: 6
+  - component: {fileID: 857159867663079278}
+  m_Layer: 0
   m_Name: PlayerProjectile
-  m_TagString: Projectile
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -149,7 +149,7 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
---- !u!114 &2165825772001028291
+--- !u!114 &857159867663079278
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -158,8 +158,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 2161149499502493707}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9c1d0e1affcb40e4f8d058c397e094e3, type: 3}
+  m_Script: {fileID: 11500000, guid: ccf24c4da873aec43b2809ca4fbd7a70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lifespan: 5
-  damage: 1
