@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(BoxCollider2D))]
@@ -21,10 +22,8 @@ public class PlayerController : MonoBehaviour
     private float lastShotTime = 0f; // Time of the last shot
     private Vector2 shootDirection = Vector2.right;
 
-    // Player identification
     public int playerNumber = 1; // 1 for Player 1, 2 for Player 2
-
-    // Boundary
+    private static int playersInPortal = 0; // Counter for players in the portal
 
     void Start()
     {
@@ -32,7 +31,6 @@ public class PlayerController : MonoBehaviour
         r2d = GetComponent<Rigidbody2D>();
         mainCollider = GetComponent<BoxCollider2D>();
 
-        // Make sure to add a PhysicsMaterial2D with zero friction
         PhysicsMaterial2D noFrictionMaterial = new PhysicsMaterial2D { friction = 0f, bounciness = 0f };
         mainCollider.sharedMaterial = noFrictionMaterial;
 
@@ -45,7 +43,6 @@ public class PlayerController : MonoBehaviour
     {
         horizontalInput = 0;
 
-        // Movement controls for Player 1 (WASD) and Player 2 (Arrow Keys)
         if (playerNumber == 1)
         {
             if (Input.GetKey(KeyCode.A))
@@ -59,13 +56,11 @@ public class PlayerController : MonoBehaviour
                 shootDirection = Vector2.right;
             }
 
-            // Jumping
             if (Input.GetKeyDown(KeyCode.W) && isGrounded)
             {
                 r2d.velocity = new Vector2(r2d.velocity.x, jumpHeight);
             }
 
-            // Shooting
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 ShootProjectile();
@@ -84,41 +79,32 @@ public class PlayerController : MonoBehaviour
                 shootDirection = Vector2.right;
             }
 
-            // Jumping
             if (Input.GetKeyDown(KeyCode.UpArrow) && isGrounded)
             {
                 r2d.velocity = new Vector2(r2d.velocity.x, jumpHeight);
             }
 
-            // Shooting
-            if (Input.GetKeyDown(KeyCode.Return)) // Use Enter for Player 2 shooting
+            if (Input.GetKeyDown(KeyCode.Return))
             {
-
                 ShootProjectile();
             }
         }
 
-        // Flip the sprite for sidescroller movement
         if (horizontalInput > 0)
         {
-            // Face right (default orientation)
             transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
         }
         else if (horizontalInput < 0)
         {
-            // Face left (flipped horizontally)
             transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
         }
     }
 
     void FixedUpdate()
     {
-
-        // Apply movement velocity
         float targetSpeed = horizontalInput * maxSpeed;
         r2d.velocity = new Vector2(targetSpeed, r2d.velocity.y);
 
-        // Ground check
         Bounds colliderBounds = mainCollider.bounds;
         float colliderRadius = mainCollider.size.x * 0.4f * Mathf.Abs(transform.localScale.x);
         Vector3 groundCheckPos = colliderBounds.min + new Vector3(colliderBounds.size.x * 0.5f, colliderRadius * 0.9f, 0);
@@ -139,24 +125,49 @@ public class PlayerController : MonoBehaviour
     {
         if (Time.time >= lastShotTime + 1f / fireRate)
         {
-            // Calculate the spawn position with an offset based on the shoot direction
             Vector3 spawnPosition = transform.position + (Vector3)shootDirection * 0.5f;
 
-        // Instantiate the projectile at the offset position
-        GameObject projectile = Instantiate(projectilePrefab, spawnPosition, Quaternion.identity);
+            GameObject projectile = Instantiate(projectilePrefab, spawnPosition, Quaternion.identity);
+            projectile.layer = LayerMask.NameToLayer("Projectile");
 
-        // Set the projectile's layer to Projectile
-        projectile.layer = LayerMask.NameToLayer("Projectile");
-
-        // Set projectile direction based on the last movement direction
-        Rigidbody2D projectileRb = projectile.GetComponent<Rigidbody2D>();
-        projectileRb.velocity = shootDirection * projectileSpeed;
-        lastShotTime = Time.time;
-        }
-        else
-        {
-            return;
+            Rigidbody2D projectileRb = projectile.GetComponent<Rigidbody2D>();
+            projectileRb.velocity = shootDirection * projectileSpeed;
+            lastShotTime = Time.time;
         }
     }
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Portal"))
+        {
+            playersInPortal++;
+            CheckPortal();
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Portal"))
+        {
+            playersInPortal--;
+        }
+    }
+
+    private void CheckPortal()
+    {
+        string currentScene = SceneManager.GetActiveScene().name;
+
+        if (playersInPortal >= 2)
+        {
+            if (currentScene == "Level1")
+            {
+                SceneManager.LoadScene("Level2");
+            }
+            else if (currentScene == "Level2")
+            {
+                Debug.Log("Game Over!");
+                Application.Quit(); // Quits the game for standalone
+            }
+        }
+    }
 }
