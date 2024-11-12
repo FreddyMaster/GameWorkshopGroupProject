@@ -119,10 +119,6 @@ public class PlayerController : MonoBehaviour
         {
             transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
         }
-
-        if (Input.GetKeyUp(KeyCode.Escape)) { 
-	        Application.Quit();
-        }  
     }
 
     void FixedUpdate()
