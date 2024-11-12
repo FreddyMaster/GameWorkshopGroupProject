@@ -8,7 +8,7 @@ public class EnemyController : MonoBehaviour
     public GameObject projectilePrefab;
     public float speed = 2f; // Movement speed of the enemy
     public Transform firePoint;
-    private float attackRange = 10f;
+    private float attackRange = 5f;
     public float projectileSpeed = 150.0f;
     private int currentPointIndex = 0;
     private bool isFacingRight = true; // Track the current facing direction

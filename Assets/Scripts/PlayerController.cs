@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
     // Player identification
     public int playerNumber = 1; // 1 for Player 1, 2 for Player 2
     private static int playersInPortal = 0; // Counter for players in the portal
-    
+
     #region Singleton
 
     public static PlayerController instance;
@@ -179,7 +179,6 @@ public class PlayerController : MonoBehaviour
         {
             playersInPortal++;
             CheckPortal();
-            Destroy(gameObject);
         }
     }
 
