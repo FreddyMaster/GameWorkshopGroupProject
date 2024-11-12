@@ -13,6 +13,7 @@ public class CameraController : MonoBehaviour
     public float zoomSpeed = 1f; // Speed of zoom adjustment
 
 
+
     private Camera cam;
 
     void Start()
@@ -25,6 +26,13 @@ public class CameraController : MonoBehaviour
         // Get positions of both players
         Vector3 player1Pos = player1.position;
         Vector3 player2Pos = player2.position;
+        Vector3 pos = Camera.main.WorldToViewportPoint(transform.position);
+
+if(pos.x < 0.0) Debug.Log("I am left of the camera's view.");
+if(1.0 < pos.x) Debug.Log("I am right of the camera's view.");
+if(pos.y < 0.0) Debug.Log("I am below the camera's view.");
+if(1.0 < pos.y) Debug.Log("I am above the camera's view.");
+
 
         // Calculate the center point between the players
         Vector3 centerPoint = (player1Pos + player2Pos) / 2;
