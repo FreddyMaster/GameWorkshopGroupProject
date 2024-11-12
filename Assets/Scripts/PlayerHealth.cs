@@ -14,6 +14,8 @@ public class PlayerHealth : MonoBehaviour
     public GameObject gameOverPanel; // Reference to the Game Over UI panel
     public float fallThreshold = -10f; // Y position threshold to detect falling off the map
     private bool isInvincible = false;
+        private Vector2 shootDirection = Vector2.right;
+
 
     void Start()
     {
@@ -25,20 +27,24 @@ public class PlayerHealth : MonoBehaviour
     void Update()
     {
         // Check if the player has fallen below the threshold
-        if (transform.position.y < fallThreshold)
+
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("DeathTrigger"))
         {
             Die();
         }
     }
-
     // Call this function when the player is hit by an enemy
-    public void TakeDamage()
+    public void TakeDamage(int damage)
     {
         if (isInvincible) return;
 
         if (health > 0)
         {
-            health--; // Reduce health by 1
+            health -= damage;
             UpdateHearts();
         }
 
@@ -70,9 +76,9 @@ public class PlayerHealth : MonoBehaviour
     // Detect collision with an enemy or potion
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Enemy"))
+        if (collision.gameObject.CompareTag("Enemy") || collision.gameObject.CompareTag("EnemyProjectile"))
         {
-            TakeDamage();
+            TakeDamage(1);
         }
         else if (collision.gameObject.CompareTag("Potion"))
         {

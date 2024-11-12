@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     public float fireRate = 5f;
     public GameObject projectilePrefab;
     public float projectileSpeed = 150.0f;
+    public GameObject player;
     private bool isGrounded = false;
     private Rigidbody2D r2d;
     private BoxCollider2D mainCollider;
@@ -25,6 +26,17 @@ public class PlayerController : MonoBehaviour
     // Player identification
     public int playerNumber = 1; // 1 for Player 1, 2 for Player 2
     private static int playersInPortal = 0; // Counter for players in the portal
+    
+    #region Singleton
+
+    public static PlayerController instance;
+
+    private void Awake()
+    {
+        instance = this;
+    }
+
+    #endregion
 
     void Start()
     {
@@ -38,7 +50,9 @@ public class PlayerController : MonoBehaviour
         r2d.freezeRotation = true;
         r2d.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         r2d.gravityScale = gravityScale;
+        Cursor.visible = false;
     }
+    
 
     void Update()
     {
@@ -65,7 +79,7 @@ public class PlayerController : MonoBehaviour
             }
 
             // Shooting
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.V) || Input.GetKeyDown(KeyCode.B))
             {
                 ShootProjectile();
             }
@@ -90,7 +104,7 @@ public class PlayerController : MonoBehaviour
             }
 
             // Shooting
-            if (Input.GetKeyDown(KeyCode.Return)) // Use Enter for Player 2 shooting
+            if (Input.GetKeyDown(KeyCode.Alpha4) || Input.GetKeyDown(KeyCode.Alpha5) || Input.GetKeyDown(KeyCode.Alpha6)) 
             {
                 ShootProjectile();
             }
@@ -105,6 +119,10 @@ public class PlayerController : MonoBehaviour
         {
             transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
         }
+
+        if (Input.GetKeyUp(KeyCode.Escape)) { 
+	        Application.Quit();
+        }  
     }
 
     void FixedUpdate()
@@ -161,6 +179,7 @@ public class PlayerController : MonoBehaviour
         {
             playersInPortal++;
             CheckPortal();
+            Destroy(gameObject);
         }
     }
 

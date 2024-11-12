@@ -8,6 +8,8 @@ TagManager:
   - Projectile
   - Portal
   - Potion
+  - DeathTrigger
+  - EnemyProjectile
   layers:
   - Default
   - TransparentFX
