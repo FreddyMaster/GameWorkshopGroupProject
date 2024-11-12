@@ -18,7 +18,6 @@ public class PlayerHealth : MonoBehaviour
     void Start()
     {
         Time.timeScale = 1f;
-
         gameOverPanel.SetActive(false); // Ensure Game Over panel is hidden at start
         UpdateHearts();
     }
@@ -68,21 +67,53 @@ public class PlayerHealth : MonoBehaviour
         Time.timeScale = 0; // Pause the game
     }
 
-    // Detect collision with an enemy
+    // Detect collision with an enemy or potion
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
             TakeDamage();
         }
+        else if (collision.gameObject.CompareTag("Potion"))
+        {
+            if (health < hearts.Length)
+            {
+                HealPlayer(collision.gameObject);
+            }
+            else
+            {
+                // Temporarily disable the potion collider to allow the player to phase through
+                StartCoroutine(TemporarilyDisableCollider(collision.collider));
+            }
+        }
     }
 
+    // Function to heal the player when they collect a potion
+    private void HealPlayer(GameObject potion)
+    {
+        if (health < hearts.Length)
+        {
+            health++; // Increase health by 1
+            UpdateHearts();
+            Destroy(potion); // Destroy the potion object after healing
+            Debug.Log("Player healed by potion!");
+        }
+    }
+
+    // Coroutine to temporarily disable the collider of the potion
+    private IEnumerator TemporarilyDisableCollider(Collider2D potionCollider)
+    {
+        potionCollider.enabled = false; // Disable the collider
+        yield return new WaitForSeconds(0.5f); // Wait for half a second
+        potionCollider.enabled = true; // Re-enable the collider
+    }
 
     // Function to restart the game, linked to the Retry button in the Game Over panel
     public void RetryGame()
-{
+    {
         SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex); // Reload the current scene
     }
+
     private IEnumerator BecomeTemporarilyInvincible()
     {
         Debug.Log("Player turned invincible!");
